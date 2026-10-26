@@ -17,7 +17,7 @@ The small, fixed pilot dataset does not require a database. Immutable JSON keeps
 ## Read the code in this order
 
 1. `backend/analysis.py`: `build_report` filters by delivery date and publication cutoff, selects the latest vintage, aligns actuals, then builds 24 rows. `metrics` computes only matched pairs.
-2. `tests/test_analysis.py`: proof of the consequential edge cases—equal-cutoff exclusion, missing halves, zero denominators, duplicate conflicts, sign and February delivery.
+2. `tests/test_analysis.py`: proof of the consequential edge casesâ€”equal-cutoff exclusion, missing halves, zero denominators, duplicate conflicts, sign and February delivery.
 3. `scripts/ingest.py` and `data/manifest.json`: review raw provenance and daily requests. WINDFOR request boundaries can overlap; exact rows are deduplicated.
 4. `backend/main.py`: validated API, CSV response, cache boundary, static frontend.
 5. `frontend/src/main.jsx`: three views and explicit retrospective labels. AbortController cancels superseded requests, preventing stale responses from overwriting newer filters.
@@ -45,7 +45,7 @@ Missing data returns JSON null. No float NaN or infinity is emitted. Invalid dat
 - SHA-256 checks match manifest.
 - Frontend production compilation passed; npm dependency audit cleared after updating Vite to 6.4.5.
 - Browser screenshots and checks are generated against the actual local API, not static mock data.
-- Vercel production deployment is READY at https://q7m2x9va.vercel.app. Public browser checks pass; all seven tested HTTP endpoints return 200 and the monthly metrics match local validation. Docker remains untested because Docker is absent. CI is configured but has not run on GitHub.
+- Vercel production deployment is READY at https://q7m2x9va.vercel.app. Public browser checks pass; all seven tested HTTP endpoints return 200 and the monthly metrics match local validation. GitHub CI run 40279053311 passed Python tests, snapshot validation, frontend build, Docker image build and container health smoke test. Docker was verified in CI rather than on the authoring computer.
 
 ## Tradeoffs and next production steps
 

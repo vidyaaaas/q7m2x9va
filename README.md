@@ -1,10 +1,14 @@
-# Windward — day-ahead wind intelligence
+# Windward â€” day-ahead wind intelligence
 
 A React + Python pilot for a GB electricity procurement desk. Replay the wind forecast available at a January 2026 decision cutoff, inspect its publication vintage, and evaluate it against Elexon actuals without selecting later forecasts.
 
 **Live application:** https://q7m2x9va.vercel.app
 
-**Submission status:** Vercel production deployment is READY and has passed public browser/API verification. Public GitHub and unlisted YouTube URLs are still pending authentication and publication. The local narrated demo is available as `../windward-demo.mp4`. Do not submit until the required public repository and YouTube links are added.
+**Public repository:** https://github.com/vidyaaaas/q7m2x9va
+
+**Unlisted video demo:** https://youtu.be/n-ZiWoceHgw (7:54; client overview 00:00–03:31, technical overview 03:31–end).
+
+**Verification:** public application and browser/API checks passed; [GitHub CI](https://github.com/vidyaaaas/q7m2x9va/actions/runs/40279053311) passed Python tests, data validation, frontend build, Docker build and container health check.
 
 ## Start with Docker
 
@@ -14,7 +18,7 @@ Prerequisite: Docker Engine / Docker Desktop with Compose.
 docker compose up --build
 ```
 
-Open http://localhost:8000. API docs: http://localhost:8000/docs. The snapshot is bundled; no API keys or network access are required at runtime. The multi-stage image builds React, runs FastAPI as a non-root user, and honours `PORT`. Docker is not installed in the authoring environment, so its configuration has been supplied but its image build has **not been locally executed**. CI includes a Docker build and health smoke test.
+Open http://localhost:8000. API docs: http://localhost:8000/docs. The snapshot is bundled; no API keys or network access are required at runtime. The multi-stage image builds React, runs FastAPI as a non-root user, and honours `PORT`. Docker is not installed in the authoring environment. The [public GitHub CI run](https://github.com/vidyaaaas/q7m2x9va/actions/runs/40279053311) passed the Docker image build and container health smoke test, as well as Python tests, snapshot validation and the frontend build.
 
 ## Start without Docker
 
@@ -54,17 +58,17 @@ The afternoon MAE is 6.6% lower for this sample. Positive bias means forecasts e
 
 ## Method and assumptions
 
-- **Decision window:** 1–31 January 2026, inclusive; deliveries 2 January–1 February. The brief refers to purchase decisions in January, not delivery dates in January.
+- **Decision window:** 1â€“31 January 2026, inclusive; deliveries 2 Januaryâ€“1 February. The brief refers to purchase decisions in January, not delivery dates in January.
 - **Timezone:** timezone-aware UTC timestamps; all relevant London dates are GMT. No DST transition occurs in this pilot. Extending beyond January requires explicit Europe/London settlement-day handling.
 - **Cutoff:** latest `publishTime < cutoff`, independently for each target hour. Equality is deliberately excluded to avoid assuming data can be acted on at the deadline. Default 09:00 is a desk assumption, leaving 20 minutes before the documented GB 09:20 hourly auction. 15:00 is an afternoon comparison. No trading is executed.
 - **Availability proxy:** `publishTime` is used because actual arrival timestamps are unavailable. Publication-before-cutoff is not proof that the client received the forecast before cutoff.
 - **Resolution:** every downloaded January forecast target is on the hour. Actuals are half-hourly. Compare the forecast with the arithmetic mean of the two same-hour FUELHH values. This treats WINDFOR as hourly average power; no invented half-hour forecast values or interpolation.
 - **Missing data:** require both actual halves. Exclude incomplete pairs from metrics, report coverage, and suppress a full-day energy total if any forecast hour is missing. Zero is a valid value, not a missing marker.
 - **Duplicates:** exact download duplicates are removed. Latest publication wins; equal-publication conflicting generation values fail rather than silently choosing one.
-- **Units:** power is MW; energy is MW × hours. Full delivery-day forecast energy is the sum of 24 hourly MW values in MWh; the UI divides by 1,000 for GWh.
-- **Metrics:** error = forecast − actual; MAE = mean absolute error; RMSE = square root of mean squared error; bias = mean signed error; WAPE = sum absolute error / sum actual × 100. WAPE is undefined when its denominator is zero. P90 uses linear interpolation between ordered observations.
+- **Units:** power is MW; energy is MW Ã— hours. Full delivery-day forecast energy is the sum of 24 hourly MW values in MWh; the UI divides by 1,000 for GWh.
+- **Metrics:** error = forecast âˆ’ actual; MAE = mean absolute error; RMSE = square root of mean squared error; bias = mean signed error; WAPE = sum absolute error / sum actual Ã— 100. WAPE is undefined when its denominator is zero. P90 uses linear interpolation between ordered observations.
 - **Hindsight:** the full-month metrics and empirical P90 are explicitly retrospective, including when visible alongside a replay. They are not inputs known at the decision cutoff and are not a calibrated uncertainty band. No claims of achieved savings or optimal reserve sizing are made.
-- **Scope:** Elexon’s GB operationally metered wind series, not all UK renewables, embedded generation or a customer portfolio. With no demand, hedges or other generation inputs, the client’s required purchases cannot be derived. This pilot answers forecast visibility and error evaluation only.
+- **Scope:** Elexonâ€™s GB operationally metered wind series, not all UK renewables, embedded generation or a customer portfolio. With no demand, hedges or other generation inputs, the clientâ€™s required purchases cannot be derived. This pilot answers forecast visibility and error evaluation only.
 
 ## Repository map
 
@@ -102,13 +106,13 @@ The 13 Python tests pass. Snapshot validation confirms 744/744 pairs at each UI 
 
 ## Publish
 
-**Public repository:** use an anonymous name such as `q7m2x9va`. From this directory, initialise a repository, commit the files, and run `gh repo create q7m2x9va --public --source=. --push`. Authenticate with `gh auth login` first. The repository name is anonymous; the GitHub account and commit identity are not thereby anonymised.
+**Public repository:** https://github.com/vidyaaaas/q7m2x9va. Clone with `git clone https://github.com/vidyaaaas/q7m2x9va.git`. The repository name is anonymous; the GitHub account and commit identity are not thereby anonymised.
 
 **Vercel:** import the repository with its root at this directory; use the included `vercel.json`. It builds the React frontend and a Python function, bundling the snapshot. The production deployment at https://q7m2x9va.vercel.app passed checks for `/`, `/api/health`, `/api/day`, `/api/month`, `/api/provenance`, `/api/export` and `/docs`, plus desktop/mobile browser interactions. Deployment ID: `dpl_4FjDzp3fpzvNJneTpyJ9JxGhkQRZ`; application commit: `538d96d`. The deployed snapshot is gzip-compressed without changing its decoded JSON values.
 
 **Heroku alternative:** create an app, set its stack to `container`, and deploy this repository with `heroku.yml`. `PORT` is provided by Heroku. Use this route if a Docker-based hosted deployment is preferred. Hosting may require an account plan; no paid resources have been provisioned.
 
-**Video:** use the provided two-part demo and script, review it, upload to YouTube with visibility **Unlisted**, and paste the resulting URL here. Maximum total duration is 10 minutes, with each overview under 5 minutes. Do not submit without the required video link.
+**Video:** https://youtu.be/n-ZiWoceHgw — uploaded as **Unlisted**, with synthetic narration disclosed. Total duration is 7:54; both overview sections are under five minutes. The transcript and chapters are in `docs/`.
 
 ## AI assistance
 
